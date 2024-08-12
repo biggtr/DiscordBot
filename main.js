@@ -7,9 +7,11 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 
 const client = new Client({intents :[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent]});
 
-
+//add commands property to client to store the commands retrieved;
 client.commands = new Collection();
 
+
+//Commands handler that retrieves commands from (commands/utilities) DIR
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -27,6 +29,25 @@ for (const folder of commandFolders) {
 		}
 	}
 }
+
+
+//Event handler that retrieves events dynamically from Another DIR
+const eventsPath = path.join(__dirname,"events");
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+for (const file of eventFiles)
+{
+	const filePath = path.join(eventsPath,file);
+	const event = require(filePath);
+	if(event.once)
+	{
+		client.once(event.name,(...argc) => event.execute(...argc));
+	}
+	else
+	{
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+};
+
 
 
 
