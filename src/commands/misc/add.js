@@ -17,7 +17,8 @@ module.exports = {
                     option.setName("num2")
                         .setDescription("The Second number")
                         .setRequired(true)
-            ),
+            )
+            ,
     async execute(interaction)
     {
         const num1 = interaction.options.getInteger('num1');
