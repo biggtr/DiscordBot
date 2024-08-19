@@ -9,14 +9,10 @@ module.exports = (client) =>
         {
             const eventFiles = getAllFiles(eventFolder);
             const eventName = eventFolder.replace(/\\/g, '/').split('/').pop();
-            console.log(eventName);
-            console.log(eventFiles);
-
             client.on(eventName, async (arg) => 
             {
                 for (const eventFile of eventFiles)  
                 {
-                    console.log(eventFile)
                     const eventFunction = require(eventFile);
                     await eventFunction(client, arg);
 

@@ -1,4 +1,5 @@
-const getApplicationCommnads = require("../../utils/getApplicationCommnads");
+const areCommandsDifferent = require("../../utils/areCommandsDifferent");
+const getApplicationCommands = require("../../utils/getApplicationCommnads");
 const getLocalCommands = require("../../utils/getLocalCommands")
 const dotenv =  require('dotenv'); 
 
@@ -11,9 +12,8 @@ module.exports = async (client) => {
         client,
         process.env.GUILD_ID
       );
-  
       for (const localCommand of localCommands) {
-        const { name, description, options } = localCommand;
+        const { name, description, options } = localCommand.data;
   
         const existingCommand = await applicationCommands.cache.find(
           (cmd) => cmd.name === name
