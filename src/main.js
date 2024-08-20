@@ -13,7 +13,6 @@ const client = new Client({intents :[GatewayIntentBits.Guilds,GatewayIntentBits.
 client.commands = new Collection();
 
 
-
 eventHandler(client);
 
 client.login(process.env.DISCORD_TOKEN);
