@@ -15,7 +15,7 @@ module.exports = async (client) => {
 
     for (const localCommand of localCommands) {
       const { name, description, options } = localCommand;
-
+   
       const existingCommand = await applicationCommands.cache.find(
         (cmd) => cmd.name === name
       );

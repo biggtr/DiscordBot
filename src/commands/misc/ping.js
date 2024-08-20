@@ -1,6 +1,8 @@
-module.exports = {
+
+module.exports = 
+{
 	name: 'ping',
-	description: 'Replies s with the bot ping!',
+	description: 'Replies swith the bot ping!',
   
 	callback: async (client, interaction) => {
 	  await interaction.deferReply();
@@ -13,4 +15,4 @@ module.exports = {
 		`Pong! Client ${ping}ms | Websocket: ${client.ws.ping}ms`
 	  );
 	},
-  };
+};
