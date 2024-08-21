@@ -1,6 +1,7 @@
 const {Client,Message} = require("discord.js")
 const Level = require("../../models/Level")
 
+const cooldowns = new Set();
 const MAX_XP = 100;
 
 const getRandomXp = (min, max) => 
@@ -18,7 +19,7 @@ const getRandomXp = (min, max) =>
 
 module.exports = async (client,message) =>
 {
-    if(!message.inGuild() || message.author.bot)
+    if(!message.inGuild() || message.author.bot || cooldowns.has(message.author.id))
         return;
 
     const xpToGive = getRandomXp(20,30);
@@ -48,7 +49,12 @@ module.exports = async (client,message) =>
                 console.log(`Error saving updated level ${e}`);
                 return;
                 });
+            cooldowns.add(message.author.id);
+            setTimeout(()=>{
+                cooldowns.delete(message.author.id);
+            },60000)
         }
+
         else
         {
             const newLevel = await Level.create({
@@ -59,7 +65,10 @@ module.exports = async (client,message) =>
             });
 
             await newLevel.save(); // Save the new level document
-
+            cooldowns.add(message.author.id);
+            setTimeout(()=>{
+                cooldowns.delete(message.author.id);
+            },60000)
 
         }
     }
