@@ -26,19 +26,26 @@ module.exports =
       const targetUserId = interaction.options.get("target-user").value;
       const reason = interaction.options.get("reason")?.value || "No reason provided";
       await interaction.deferReply();
-      const targetUser = await interaction.guild.members.fetch(targetUserId);
-      if (!targetUser) 
+
+      const memberToKick = await interaction.guild.members.fetch(targetUserId);
+      if (!memberToKick) 
         {
           await interaction.editReply("That user doesn't exist in this server.");
           return;
         }
-        if(targetUser.id === interaction.guild.ownerId)
+      
+      if(memberToKick.user.bot)
+      {
+        await interaction.editReply("I Can't kick a bot.");
+        return;
+      }
+      if(memberToKick.id === interaction.guild.ownerId)
         {
           await interaction.editReply("You can't ban that user because they're the server owner.");
           return;
         }
 
-      const targetUserRolePosition = targetUser.roles.highest.position; // Highest role of the target user
+      const targetUserRolePosition = memberToKick.roles.highest.position; // Highest role of the target user
       const requestUserRolePosition = interaction.member.roles.highest.position; // Highest role of the user running the cmd
       const botRolePosition = interaction.guild.members.me.roles.highest.position; // Highest role of the bot
       if (targetUserRolePosition >= requestUserRolePosition) 
@@ -57,8 +64,8 @@ module.exports =
         }
       try 
       {
-        await targetUser.kick({reason});
-        await interaction.editReply(`User ${targetUser} was kicked\nReason: ${reason}`);
+        await memberToKick.kick({reason});
+        await interaction.editReply(`User ${memberToKick} was kicked\nReason: ${reason}`);
       }
       catch (error) 
       {
