@@ -1,4 +1,4 @@
-const {Client,Message} = require("discord.js")
+const {Client,Message, UserPremiumType} = require("discord.js")
 const Level = require("../../models/Level")
 const User = require("../../models/User")
 const cooldowns = new Set();
@@ -34,15 +34,19 @@ module.exports = async (client,message) =>
     {
 
         const userObject = await User.findOne(query).populate("level");
+        let newLevel;
         if(userObject)
         {
-            userObject.level.xp += xpToGive;
-            if(userObject.level.xp >= MAX_XP)
+            newLevel = !userObject.level ? await Level.create({xp: 0,level:1}) : userObject.level; 
+            newLevel.xp += xpToGive;
+            if(newLevel.xp >= MAX_XP)
             {
-                userObject.level.xp = 0;
-                userObject.level.level +=1;
-                await message.author.send(`Congratulations! You have leveled up to **level ${newLevel}**.`);
+                newLevel.xp = 0;
+                newLevel.level += 1;
+                await message.author.send(`Congratulations! You have leveled up to **level ${newLevel.level}**.`);
             }
+            await newLevel.save();
+            userObject.level = newLevel._id;
             userObject.save().catch(e =>
                 {
                 console.log(`Error saving updated level ${e}`);
@@ -56,7 +60,7 @@ module.exports = async (client,message) =>
 
         else
         {
-            const newLevel = await Level.create
+            newLevel = await Level.create
             (
                 {
                     xp:0,
@@ -67,7 +71,7 @@ module.exports = async (client,message) =>
                 userId: message.author.id,
                 username: message.author.username,
                 guildId: message.guild.id,
-                level: newLevel, 
+                level: newLevel._id, 
             });
 
             await newUser.save();
