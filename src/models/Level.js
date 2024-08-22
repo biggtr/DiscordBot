@@ -4,16 +4,6 @@ const {Schema,model} = require("mongoose")
 const levelSchema = new Schema
 (
     {
-        userId: 
-        {
-            type:String,
-            required: true
-        },
-        guildId:
-        {
-            type:String,
-            required:true
-        },
         xp:
         {
             type:Number,
