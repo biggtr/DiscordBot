@@ -1,6 +1,6 @@
 const {Client,Message} = require("discord.js")
 const Level = require("../../models/Level")
-
+const User = require("../../models/User")
 const cooldowns = new Set();
 const MAX_XP = 100;
 
@@ -27,24 +27,27 @@ module.exports = async (client,message) =>
     const query = 
     {
         userId:message.author.id,
+        username: message.author.username,
         guildId: message.guild.id,
     };
     try
     {
 
-        const levelModel = await Level.findOne(query);
-        if(levelModel)
+        const userObject = await Level.findOne(query)
+        .populate("role")
+        .populate("portfolio")
+        .populate("level");
+        if(userObject)
         {
-            levelModel.xp += xpToGive;
-            
-            if(levelModel.xp >= MAX_XP)
+            userObject.level.xp += xpToGive;
+            if(userObject.level.xp >= MAX_XP)
             {
-                levelModel.xp = 0;
-                levelModel.level +=1;
-                newLevel = levelModel.level;
+                userObject.level.xp = 0;
+                userObject.level.xp +=1;
+                newLevel = userObject.level.xp;
                 await message.author.send(`Congratulations! You have leveled up to **level ${newLevel}**.`);
             }
-            levelModel.save().catch(e =>
+            userObject.save().catch(e =>
                 {
                 console.log(`Error saving updated level ${e}`);
                 return;
@@ -57,14 +60,21 @@ module.exports = async (client,message) =>
 
         else
         {
-            const newLevel = await Level.create({
+            const newLevel = await Level.create
+            (
+                {
+                    xp:0,
+                    level:1,
+                }
+            );
+            const newUser = await User.create({
                 userId: message.author.id,
+                username: message.author.username,
                 guildId: message.guild.id,
-                xp: xpToGive,
-                level: 1, // Initialize level to 1
+                level: newLevel, 
             });
 
-            await newLevel.save(); // Save the new level document
+            await newUser.save(); // Save the new level document
             cooldowns.add(message.author.id);
             setTimeout(()=>{
                 cooldowns.delete(message.author.id);

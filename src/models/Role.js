@@ -8,7 +8,7 @@ const roleSchema = new Schema
         {
             type: String,
             required: true,
-            enum: ["Game Programmer", "Graphics Engineer", "VFX Artist","Animator","3D Artist",],
+            unique: true,
         }
     }
 )
