@@ -33,18 +33,14 @@ module.exports = async (client,message) =>
     try
     {
 
-        const userObject = await Level.findOne(query)
-        .populate("role")
-        .populate("portfolio")
-        .populate("level");
+        const userObject = await User.findOne(query).populate("level");
         if(userObject)
         {
             userObject.level.xp += xpToGive;
             if(userObject.level.xp >= MAX_XP)
             {
                 userObject.level.xp = 0;
-                userObject.level.xp +=1;
-                newLevel = userObject.level.xp;
+                userObject.level.level +=1;
                 await message.author.send(`Congratulations! You have leveled up to **level ${newLevel}**.`);
             }
             userObject.save().catch(e =>
@@ -74,7 +70,7 @@ module.exports = async (client,message) =>
                 level: newLevel, 
             });
 
-            await newUser.save(); // Save the new level document
+            await newUser.save();
             cooldowns.add(message.author.id);
             setTimeout(()=>{
                 cooldowns.delete(message.author.id);

@@ -23,6 +23,13 @@ module.exports =
   botPermissions: [PermissionFlagsBits.KickMembers],
     callback: async (client,interaction) =>
     {
+
+      /**
+     *
+     * @param {Client} client
+     * @param {Interaction} interaction
+     */
+
       const targetUserId = interaction.options.get("target-user").value;
       const reason = interaction.options.get("reason")?.value || "No reason provided";
       await interaction.deferReply();
